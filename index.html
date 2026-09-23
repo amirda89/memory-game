@@ -93,17 +93,6 @@
         }, 1000);
       }
 
-      function hideSameCards() {
-        matchCount++;
-        document
-          .getElementById(`card${openIndex1}`)
-          .classList.add("card-hidden");
-        document
-          .getElementById(`card${openIndex2}`)
-          .classList.add("card-hidden");
-        openIndex1 = -1;
-      }
-
       function gameRestart() {
         setTimeout(function () {
           alert(`you won by ${clickCount} clicks`);
@@ -141,7 +130,6 @@
           openIndex2 = index;
 
           if (cards[openIndex1] === cards[openIndex2]) {
-            openIndex2 = -1;
             hideSameCards();
 
             if (matchCount === items.length) {
@@ -153,6 +141,18 @@
         }
 
         gameLoose();
+      }
+
+      function hideSameCards() {
+        matchCount++;
+        document
+          .getElementById(`card${openIndex1}`)
+          .classList.add("card-hidden");
+        document
+          .getElementById(`card${openIndex2}`)
+          .classList.add("card-hidden");
+        openIndex1 = -1;
+        openIndex2 = -1;
       }
     </script>
   </body>
