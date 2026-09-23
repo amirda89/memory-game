@@ -30,7 +30,7 @@
         text-align: center;
         align-items: center;
         border-radius: 17px;
-        background-color: rgb(76, 74, 198);
+        background-color: cadetblue;
         color: transparent;
         transition: all 0.5s ease-in;
       }
@@ -47,6 +47,7 @@
   </head>
   <body>
     <div class="container" id="container"></div>
+
     <script>
       const items = ["🚑", "🚓", "🚒", "🏍️", "🛴", "🚕", "😂"];
       const cards = [];
@@ -55,11 +56,6 @@
       let animating = false;
       let matchCount = 0;
       let clickCount = 0;
-
-      for (let i = 0; i < items.length; i++) {
-        cards.push(items[i]);
-        cards.push(items[i]);
-      }
 
       function shuffle(array) {
         let currentIndex = array.length;
@@ -73,7 +69,6 @@
           ];
         }
       }
-      shuffle(cards);
 
       function startGame() {
         let result = "";
@@ -82,55 +77,82 @@
         }
         document.getElementById("container").innerHTML = result;
       }
+
+      function closeTheCards() {
+        animating = true;
+        setTimeout(function () {
+          document
+            .getElementById(`card${openIndex1}`)
+            .classList.remove("card-open");
+          document
+            .getElementById(`card${openIndex2}`)
+            .classList.remove("card-open");
+          openIndex1 = -1;
+          openIndex2 = -1;
+          animating = false;
+        }, 1000);
+      }
+
+      function hideSameCards() {
+        matchCount++;
+        document
+          .getElementById(`card${openIndex1}`)
+          .classList.add("card-hidden");
+        document
+          .getElementById(`card${openIndex2}`)
+          .classList.add("card-hidden");
+        openIndex1 = -1;
+      }
+
+      function gameRestart() {
+        setTimeout(function () {
+          alert(`you won by ${clickCount} clicks`);
+          location.reload();
+        }, 1000);
+      }
+
+      function gameLoose() {
+        if (clickCount > 26) {
+          alert(`you loose ${clickCount}`);
+        }
+      }
+
+      for (let i = 0; i < items.length; i++) {
+        cards.push(items[i]);
+        cards.push(items[i]);
+      }
+
+      shuffle(cards);
+
       startGame();
 
       function reveal(index) {
         clickCount++;
-        console.log(clickCount);
-        if (!animating) {
-          const card = document.getElementById(`card${index}`);
-          card.classList.add("card-open");
-          if (openIndex1 === -1) {
-            openIndex1 = index;
-          } else {
-            if (openIndex1 !== index) {
-              openIndex2 = index;
-              if (cards[openIndex1] === cards[openIndex2]) {
-                matchCount++;
-                document
-                  .getElementById(`card${openIndex1}`)
-                  .classList.add("card-hidden");
-                document
-                  .getElementById(`card${openIndex2}`)
-                  .classList.add("card-hidden");
-                openIndex1 = -1;
-                openIndex2 = -1;
-                if (matchCount === items.length) {
-                  setTimeout(function () {
-                    alert(`you won by ${clickCount} clicks`);
-                    location.reload();
-                  }, 1000);
-                }
-              } else {
-                animating = true;
-                setTimeout(function () {
-                  document
-                    .getElementById(`card${openIndex1}`)
-                    .classList.remove("card-open");
-                  document
-                    .getElementById(`card${openIndex2}`)
-                    .classList.remove("card-open");
-                  openIndex1 = -1;
-                  openIndex2 = -1;
-                  animating = false;
-                }, 1000);
-              }
+        if (animating) return;
+
+        const card = document.getElementById(`card${index}`);
+        card.classList.add("card-open");
+
+        if (openIndex1 === -1) {
+          openIndex1 = index;
+        } else {
+          if (openIndex1 === index) return;
+
+          openIndex2 = index;
+
+          if (cards[openIndex1] === cards[openIndex2]) {
+            openIndex2 = -1;
+            hideSameCards();
+
+            if (matchCount === items.length) {
+              gameRestart();
             }
+          } else {
+            closeTheCards();
           }
         }
-        if (clickCount > 26) {
-          alert(`you loose ${clickCount}`);
-        }
+
+        gameLoose();
       }
     </script>
   </body>
