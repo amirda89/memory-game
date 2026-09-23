@@ -78,6 +78,18 @@
         document.getElementById("container").innerHTML = result;
       }
 
+      function hideSameCards() {
+        matchCount++;
+        document
+          .getElementById(`card${openIndex1}`)
+          .classList.add("card-hidden");
+        document
+          .getElementById(`card${openIndex2}`)
+          .classList.add("card-hidden");
+        openIndex1 = -1;
+        openIndex2 = -1;
+      }
+
       function closeTheCards() {
         animating = true;
         setTimeout(function () {
@@ -141,18 +153,6 @@
         }
 
         gameLoose();
-      }
-
-      function hideSameCards() {
-        matchCount++;
-        document
-          .getElementById(`card${openIndex1}`)
-          .classList.add("card-hidden");
-        document
-          .getElementById(`card${openIndex2}`)
-          .classList.add("card-hidden");
-        openIndex1 = -1;
-        openIndex2 = -1;
       }
     </script>
   </body>
