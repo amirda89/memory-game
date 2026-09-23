@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>"
+    />
+    <title>Memory game</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .container {
+        width: 560px;
+        margin: 40px auto;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .card {
+        width: 100px;
+        height: 150px;
+        font-size: 40px;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        border-radius: 17px;
+        background-color: rgb(76, 74, 198);
+        color: transparent;
+        transition: all 0.5s ease-in;
+      }
+      .card-open {
+        color: black;
+        background-color: beige;
+        border: 1px solid brown;
+      }
+      .card-hidden {
+        visibility: hidden;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="container"></div>
+    <script>
+      const items = ["🚑", "🚓", "🚒", "🏍️", "🛴", "🚕", "😂"];
+      const cards = [];
+      let openIndex1 = -1;
+      let openIndex2 = -1;
+      let animating = false;
+      let matchCount = 0;
+      let clickCount = 0;
+
+      for (let i = 0; i < items.length; i++) {
+        cards.push(items[i]);
+        cards.push(items[i]);
+      }
+
+      function shuffle(array) {
+        let currentIndex = array.length;
+        while (currentIndex !== 0) {
+          let randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex],
+            array[currentIndex],
+          ];
+        }
+      }
+      shuffle(cards);
+
+      function startGame() {
+        let result = "";
+        for (let i = 0; i < cards.length; i++) {
+          result += `<div class="card" id="card${i}" onclick="reveal(${i})">${cards[i]}</div>`;
+        }
+        document.getElementById("container").innerHTML = result;
+      }
+      startGame();
+
+      function reveal(index) {
+        clickCount++;
+        console.log(clickCount);
+        if (!animating) {
+          const card = document.getElementById(`card${index}`);
+          card.classList.add("card-open");
+          if (openIndex1 === -1) {
+            openIndex1 = index;
+          } else {
+            if (openIndex1 !== index) {
+              openIndex2 = index;
+              if (cards[openIndex1] === cards[openIndex2]) {
+                matchCount++;
+                document
+                  .getElementById(`card${openIndex1}`)
+                  .classList.add("card-hidden");
+                document
+                  .getElementById(`card${openIndex2}`)
+                  .classList.add("card-hidden");
+                openIndex1 = -1;
+                openIndex2 = -1;
+                if (matchCount === items.length) {
+                  setTimeout(function () {
+                    alert(`you won by ${clickCount} clicks`);
+                    location.reload();
+                  }, 1000);
+                }
+              } else {
+                animating = true;
+                setTimeout(function () {
+                  document
+                    .getElementById(`card${openIndex1}`)
+                    .classList.remove("card-open");
+                  document
+                    .getElementById(`card${openIndex2}`)
+                    .classList.remove("card-open");
+                  openIndex1 = -1;
+                  openIndex2 = -1;
+                  animating = false;
+                }, 1000);
+              }
+            }
+          }
+        }
+        if (clickCount > 26) {
+          alert(`you loose ${clickCount}`);
+        }
+      }
+    </script>
+  </body>
+</html>
