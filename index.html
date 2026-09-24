@@ -13,6 +13,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
       }
       .container {
         width: 560px;
@@ -43,19 +44,57 @@
         visibility: hidden;
         pointer-events: none;
       }
+      dialog {
+        text-align: center;
+        margin: 100px auto;
+        border: none;
+        border-radius: 15px;
+        padding: 20px;
+        background-color: bisque;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        max-width: 300px;
+        width: 100%;
+      }
+      dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+      }
+      #restartBtn {
+        border: none;
+        background-color: chocolate;
+        border-radius: 10px;
+        padding: 5px;
+        margin-top: 5px;
+      }
+      #restartBtn:hover {
+        color: white;
+      }
     </style>
   </head>
   <body>
     <div class="container" id="container"></div>
+    <dialog id="popupWindow">
+      <h2>All pairs were found!</h2>
+      <p id="modalMessage"></p>
+      <button id="restartBtn">Play again</button>
+    </dialog>
 
     <script>
-      const items = ["🚑", "🚓", "🚒", "🏍️", "🛴", "🚕", "😂"];
+      const items = ["🚑", "🚓", "🚒", "🏍️", "🛴", "🚕"];
       const cards = [];
       let openIndex1 = -1;
       let openIndex2 = -1;
       let animating = false;
       let matchCount = 0;
-      let clickCount = 0;
+      let moveCount = 0;
+      let missCount = 0;
+      const modal = document.getElementById("popupWindow");
+      const modalMessage = document.getElementById("modalMessage");
+      const restartBtn = document.getElementById("restartBtn");
+
+      restartBtn.addEventListener("click", function () {
+        location.reload();
+      });
 
       function shuffle(array) {
         let currentIndex = array.length;
@@ -107,15 +146,9 @@
 
       function gameRestart() {
         setTimeout(function () {
-          alert(`you won by ${clickCount} clicks`);
-          location.reload();
+          modalMessage.textContent = `Misses: ${missCount}, Moves: ${moveCount}`;
+          modal.showModal();
         }, 1000);
-      }
-
-      function gameLoose() {
-        if (clickCount > 26) {
-          alert(`you loose ${clickCount}`);
-        }
       }
 
       for (let i = 0; i < items.length; i++) {
@@ -128,7 +161,6 @@
       startGame();
 
       function reveal(index) {
-        clickCount++;
         if (animating) return;
 
         const card = document.getElementById(`card${index}`);
@@ -140,6 +172,7 @@
           if (openIndex1 === index) return;
 
           openIndex2 = index;
+          moveCount++;
 
           if (cards[openIndex1] === cards[openIndex2]) {
             hideSameCards();
@@ -148,11 +181,10 @@
               gameRestart();
             }
           } else {
+            missCount++;
             closeTheCards();
           }
         }
-
-        gameLoose();
       }
     </script>
   </body>
